@@ -4,7 +4,6 @@ const path = require('path');
 
 const app = express();
 
-//enable pug
 app.set('view engine', 'ejs');
 app.set('views','views');
 
