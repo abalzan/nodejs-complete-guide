@@ -3,12 +3,13 @@ const path = require('path');
 
 const pathFile = path.join(path.dirname(process.mainModule.filename), 'data', 'products.json');
 
-const getProductsFromFile = (callback) => {
+const getProductsFromFile = callback => {
     fs.readFile(pathFile, (err, fileContent) => {
         if(err) {
-           return callback([]);
+           callback([]);
+        } else {
+            callback(JSON.parse(fileContent));
         }
-        callback(JSON.parse(fileContent));
     });
 };
 
