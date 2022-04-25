@@ -9,18 +9,18 @@ const Cart = sequelize.define('cart', {
         allowNull: false,
         primaryKey: true
     },
-    userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    productId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    }
+    // userId: {
+    //     type: Sequelize.INTEGER,
+    //     allowNull: false
+    // },
+    // productId: {
+    //     type: Sequelize.INTEGER,
+    //     allowNull: false
+    // },
+    // quantity: {
+    //     type: Sequelize.INTEGER,
+    //     allowNull: false
+    // }
 });
 
 module.exports = Cart;
