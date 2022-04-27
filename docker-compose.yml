@@ -14,3 +14,12 @@ services:
       MYSQL_DATABASE: nodejs
       MYSQL_USER: nodejs
       MYSQL_PASSWORD: nodejs
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: nodejs
+      MONGO_INITDB_ROOT_PASSWORD: nodejs
+      MONGO_INITDB_DATABASE: nodejs
