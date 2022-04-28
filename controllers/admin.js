@@ -8,6 +8,19 @@ exports.getAddProduct = (req, res, next) => {
     })
 };
 
+exports.postAddProduct = (req, res, next) => {
+    const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
+    const price = req.body.price;
+    const description = req.body.description;
+    const product = new Product( title, price, description, imageUrl,);
+    product.save().then(result => {
+        res.redirect('/admin/products');
+    }).catch(err => {
+        console.log(err);
+    });
+};
+
 exports.postEditProduct = (req, res, next) => {
     const id = req.body.productId;
     const title = req.body.title;
@@ -60,11 +73,15 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.deleteProduct = (req, res, next) => {
     const id = req.body.productId;
-    Product.findByPk(id).then(product => {
-        return product.destroy();
-    }).then(() => {
-        res.redirect('/admin/products');
-    }).catch(err => console.log(err));
+   Product.deleteById(id).then(() => {
+       res.status(200).json({
+           message: 'Success!'
+       });
+   }).catch(err => {
+       res.status(500).json({
+           message: 'Deleting product failed!'
+       });
+   });
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -74,7 +91,7 @@ exports.getEditProduct = (req, res, next) => {
     }
     const prodId = req.params.productId;
 
-    Product.findByPk(prodId)
+    Product.findById(prodId)
         .then(product => {
             if (!product) {
                 return res.redirect('/');
