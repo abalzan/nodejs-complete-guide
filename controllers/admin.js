@@ -55,12 +55,7 @@ exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
     const product = new Product(title, price, description, imageUrl);
-    req.user.createProduct({
-        title: title,
-        price: price,
-        description: description,
-        imageUrl: imageUrl
-    }).then(result => {
+    product.save().then(result => {
         res.redirect('/admin/products');
     }).catch(err => {
         console.log(err);
@@ -70,9 +65,7 @@ exports.postAddProduct = (req, res, next) => {
 exports.deleteProduct = (req, res, next) => {
     const id = req.body.productId;
    Product.deleteById(id).then(() => {
-       res.status(200).json({
-           message: 'Success!'
-       });
+       res.redirect('/admin/products');
    }).catch(err => {
        res.status(500).json({
            message: 'Deleting product failed!'
