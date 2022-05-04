@@ -100,6 +100,18 @@ class User {
           console.log(err);
         });
   }
+
+  getOrders() {
+    const db = getDb();
+    return db.collection('orders').find({'user._id': new mongodb.ObjectId(this._id)})
+        .toArray()
+        .then(orders => {
+          return orders;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+  }
 }
 
 module.exports = User;
