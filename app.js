@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const errorController = require('./controllers/error');
-const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
 const app = express();
@@ -25,7 +25,6 @@ app.use((req, res, next) => {
       next();
     })
     .catch(err => console.log(err));
-
 });
 
 app.use('/admin', adminRoutes.routes);
@@ -33,9 +32,9 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  // user = new User('Andrei', 'andrei@andrei.com' );
-  // user.save();
-  console.log('Connected to database');
-  app.listen(3000);
-});
+mongoose.connect('mongodb+srv://andrei:R9LeoQS78jgS0g04@nodejscompletecourseclu.xgbdg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+  .then(result => {
+      app.listen(3000);
+  }).catch(err => {
+      console.log(err);
+  });
