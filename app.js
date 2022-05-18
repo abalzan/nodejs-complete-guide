@@ -3,11 +3,18 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const mongoDBStore = require('connect-mongodb-session')(session);
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
+const MONGODB_URI = 'mongodb+srv://andrei:R9LeoQS78jgS0g04@nodejscompletecourseclu.xgbdg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+
 const app = express();
+const store = new mongoDBStore({
+    uri: MONGODB_URI,
+    collection: 'sessions'
+});
 
 app.set('view engine', 'ejs');
 app.set('views','views');
@@ -22,7 +29,8 @@ app.use(
   session({
     secret: 'my secret',
     resave: false, //session will not be saved if it is not modified
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: store
   })
 );
 
@@ -42,7 +50,7 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
 
-mongoose.connect('mongodb+srv://andrei:R9LeoQS78jgS0g04@nodejscompletecourseclu.xgbdg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+mongoose.connect(MONGODB_URI)
   .then(result => {
     User.findOne().then(user => {
       if (!user) {
