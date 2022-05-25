@@ -5,9 +5,7 @@ exports.getLogin = (req, res, next) => {
   // const isLoggedIn = req.get('Cookie').split('=')[0].trim().split(';')[0] === 'true';
   res.render('auth/login', {
     path: '/login',
-    pageTitle: 'Login',
-    // isAuthenticated: isLoggedIn
-    isAuthenticated: false
+    pageTitle: 'Login'
   });
 };
 
@@ -15,7 +13,6 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        isAuthenticated: false
     });
 };
 
