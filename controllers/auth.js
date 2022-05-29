@@ -32,13 +32,26 @@ exports.getSignup = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-  User.findOne({ email: email })
-      .then(user => {
-          if (!user) {
-              req.flash('error', 'Invalid email or password.');
-              return res.redirect('/login');
-          }
-          bcrypt.compare(password, user.password)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).render('auth/login', {
+            path: '/login',
+            pageTitle: 'Login',
+            errorMessage: errors.array()[0].msg,
+            oldInput: {
+                email: email,
+                password: password
+            },
+            validationErrors: errors.array()
+        });
+    }
+    User.findOne({ email: email })
+        .then(user => {
+            if (!user) {
+                req.flash('error', 'Invalid email or password.');
+                return res.redirect('/login');
+            }
+           bcrypt.compare(password, user.password)
               .then(doMatch => {
                   if (doMatch) {
                       req.session.isLoggedIn = true;
