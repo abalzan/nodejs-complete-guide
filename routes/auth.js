@@ -11,6 +11,13 @@ router.post('/login', authController.postLogin);
 router.post('/logout', authController.postLogout);
 router.post('/signup',
     check('email').isEmail().withMessage('Please enter a valid email'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    check('confirmPassword').custom((value, { req }) => {
+        if (value !== req.body.password) {
+            throw new Error('Passwords do not match');
+        }
+        return true;
+    }),
     authController.postSignup);
 
 router.get('/reset', authController.getReset);
