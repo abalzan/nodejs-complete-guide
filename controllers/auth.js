@@ -17,7 +17,11 @@ exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login',
-    errorMessage: req.flash('error')[0]
+    errorMessage: req.flash('error')[0],
+    oldInput: {
+      email: '',
+      password: ''
+    },
   });
 };
 
@@ -25,7 +29,12 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        errorMessage: req.flash('error')[0]
+        errorMessage: req.flash('error')[0],
+        oldInput: {
+            email: '',
+            password: '',
+            confirmPassword: ''
+        },
     });
 };
 
