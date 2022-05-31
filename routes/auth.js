@@ -24,7 +24,7 @@ router.post('/login',[
                 }
             })
         }).normalizeEmail(),
-    check('password', 'Your password, must be at least 6 characters long.').isLength({ min: 6 }),
+    check('password', 'Your password, must be at least 6 characters long.').isLength({ min: 6 }).trim(),
 ], authController.postLogin);
 router.post('/logout', authController.postLogout);
 router.post('/signup',
@@ -36,8 +36,8 @@ router.post('/signup',
                 }
             });
         }).normalizeEmail(),
-    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-    check('confirmPassword').custom((value, { req }) => {
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long').trim(),
+    check('confirmPassword').trim().custom((value, { req }) => {
         if (value !== req.body.password) {
             throw new Error('Passwords do not match');
         }
