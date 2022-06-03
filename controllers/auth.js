@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const { validationResult } = require("express-validator/check");
+const { render500Error } = require('./error-handler');
 
 const transporter = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -96,7 +97,9 @@ exports.postLogin = (req, res, next) => {
                   res.redirect('/login');
           });
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+          return render500Error(err, req, res, next);
+      });
 }
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
@@ -132,7 +135,9 @@ exports.postSignup = (req, res, next) => {
                 subject: 'Signup succeeded!',
                 html: '<h1>You successfully signed up!</h1>'
             }).catch(err => console.log(err));
-  }).catch(err => console.log(err));
+    }).catch(err => {
+      return render500Error(err, req, res, next)
+    });
 };
 
 exports.postLogout = (req, res, next) => {
@@ -178,7 +183,9 @@ exports.postReset = (req, res, next) => {
             <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
           `
               })
-          }).catch(err => console.log(err));
+          }).catch(err => {
+          return render500Error(err, req, res, next)
+      });
   });
 };
 
@@ -197,8 +204,9 @@ exports.getNewPassword = (req, res, next) => {
               userId: user._id.toString(),
               passwordToken: token
           });
-      })
-      .catch(err => console.log(err));
+      }).catch(err => {
+      return render500Error(err, req, res, next)
+  });
 };
 
 exports.postNewPassword = (req, res, next) => {
@@ -220,5 +228,7 @@ exports.postNewPassword = (req, res, next) => {
       return resetUser.save();
   }).then(result => {
       res.redirect('/login');
-  }).catch(err => console.log(err));
+  }).catch(err => {
+      return render500Error(err, req, res, next)
+  });
 };

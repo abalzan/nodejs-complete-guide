@@ -1,5 +1,6 @@
 const {validationResult} = require('express-validator');
 const Product = require('../models/product');
+const { render500Error } = require('./error-handler');
 
 exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
@@ -31,14 +32,15 @@ exports.postAddProduct = (req, res, next) => {
                 price: price,
                 description: description
             },
-            errorMessage: errors.array()[0].msg
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
         })
     }
     const product = new Product( {title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user});
     product.save().then(() => {
         res.redirect('/admin/products');
     }).catch(err => {
-        console.log(err);
+        return render500Error(err, req, res, next);
     });
 };
 
@@ -79,7 +81,7 @@ exports.postEditProduct = (req, res, next) => {
             console.log('UPDATED PRODUCT!');
             res.redirect('/admin/products');
         }).catch(err => {
-            console.log(err);
+            return render500Error(err, req, res, next);
         });
     });
 };
@@ -91,7 +93,9 @@ exports.getProducts = (req, res, next) => {
             pageTitle: 'Admin Products',
             path: '/admin/products',
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        return render500Error(err, req, res, next);
+    });
 };
 
 exports.deleteProduct = (req, res, next) => {
@@ -99,7 +103,9 @@ exports.deleteProduct = (req, res, next) => {
    Product.deleteOne({_id: id, userId: req.user._id}).then(() => {
        console.log('DESTROYED PRODUCT');
        res.redirect('/admin/products');
-   }).catch(err => console.log(err));
+   }).catch(err => {
+       return render500Error(err, req, res, next);
+   });
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -124,6 +130,8 @@ exports.getEditProduct = (req, res, next) => {
                 validationErrors: [],
             });
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            return render500Error(err, req, res, next);
+        });
 };
 

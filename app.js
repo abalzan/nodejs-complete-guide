@@ -47,10 +47,15 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then(user => {
-      req.user = user;
-      next();
+        if (!user) {
+            return next();
+        }
+        req.user = user;
+        next();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+        throw new Error(err);
+    });
 });
 
 app.use((req, res, next) => {
@@ -63,11 +68,16 @@ app.use('/admin', adminRoutes.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.get('/500', errorController.get500);
 app.use(errorController.get404);
+
+app.use((error, req, res, next) => {
+    res.redirect('/500');
+});
 
 mongoose.connect(MONGODB_URI)
   .then(result => {
       app.listen(3000);
   }).catch(err => {
-      console.log(err);
+    throw new Error(err)
   });
