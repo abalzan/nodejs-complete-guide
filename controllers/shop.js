@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
+const {render500Error} = require("./error-handler");
 
 exports.getProducts = (req, res, next) => {
     Product.find()
@@ -11,7 +12,7 @@ exports.getProducts = (req, res, next) => {
             });
         })
         .catch(err => {
-            console.log(err);
+            return render500Error(err, req, res, next);
         });
 }
 
@@ -26,7 +27,7 @@ exports.getProduct = (req, res, next) => {
             });
         })
         .catch(err => {
-            console.log(err);
+            return render500Error(err, req, res, next);
         });
 }
 
@@ -37,7 +38,9 @@ exports.getIndex = (req, res, next) => {
             pageTitle: 'Shop',
             path: '/'
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        return render500Error(err, req, res, next)
+    });
 }
 
 exports.getCart = (req, res, next) => {
@@ -49,8 +52,9 @@ exports.getCart = (req, res, next) => {
                 pageTitle: 'Your Cart',
                 products: products
             });
-        })
-        .catch(err => console.log(err));
+        }).catch(err => {
+        return render500Error(err, req, res, next)
+    });
 }
 
 exports.postCart = (req, res, next) => {
@@ -59,8 +63,9 @@ exports.postCart = (req, res, next) => {
         .then(product => {
             req.user.addToCart(product);
             res.redirect('/cart');
-        })
-        .catch(err => console.log(err));
+        }).catch(err => {
+        return render500Error(err, req, res, next)
+    });
 }
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -68,8 +73,9 @@ exports.postCartDeleteProduct = (req, res, next) => {
     req.user.removeFromCart(prodId)
         .then(() => {
             res.redirect('/cart');
-        })
-        .catch(err => console.log(err));
+        }).catch(err => {
+        return render500Error(err, req, res, next)
+    });
 }
 
 exports.postOrder = (req, res, next) => {
@@ -90,7 +96,9 @@ exports.postOrder = (req, res, next) => {
         return req.user.clearCart();
     }).then(() => {
         res.redirect('/orders');
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        return render500Error(err, req, res, next)
+    });
 }
 
 exports.getOrders = (req, res, next) => {
@@ -101,7 +109,8 @@ exports.getOrders = (req, res, next) => {
                 pageTitle: 'Your Orders',
                 orders: orders,
             });
-        })
-        .catch(err => console.log(err));
+        }).catch(err => {
+            return render500Error(err, req, res, next)
+    });
 };
 
