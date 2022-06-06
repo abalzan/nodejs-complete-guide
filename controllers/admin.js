@@ -118,7 +118,7 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.deleteProduct = (req, res, next) => {
-    const id = req.body.productId;
+    const id = req.params.productId;
     Product.findById(id).then(product => {
         if (!product) {
             return next(new Error('Product not found.'));
@@ -127,9 +127,13 @@ exports.deleteProduct = (req, res, next) => {
         return Product.deleteOne({_id: id, userId: req.user._id});
     }).then(() => {
        console.log('DESTROYED PRODUCT');
-       res.redirect('/admin/products');
+       res.status(200).json({
+          message: 'Successfully deleted product'
+       });
    }).catch(err => {
-       return render500Error(err, req, res, next);
+       res.status(500).json({
+              message: 'Deleting product failed.'
+       });
    });
 };
 
