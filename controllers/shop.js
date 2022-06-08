@@ -4,6 +4,7 @@ const {render500Error} = require("./error-handler");
 const fs = require('fs');
 const path = require('path');
 const pdfDocument = require('pdfkit');
+const stripe = require('stripe')('sk_test_51L7x1MHea8cNXiV8YqG9NNmFTrdLc3zXoAJrBlXstk2bMgpchtXDOs5iy2vrKeEW7K9PtXFVyJCTd4N1oqkiBAqu00J8Pg5FNw');
 
 const ITEMS_PER_PAGE = 3;
 
@@ -110,27 +111,49 @@ exports.postCartDeleteProduct = (req, res, next) => {
 }
 
 exports.getCheckout = (req, res, next) => {
+    let products;
+    let total = 0;
 
     req.user.populate('cart.items.productId')
         .then(user => {
-            const products = user.cart.items;
-            let total = 0;
+            products = user.cart.items;
+            total = 0;
             products.forEach(p => {
                 total += p.quantity * p.productId.price;
             });
-            res.render('shop/checkout', {
-                path: '/checkout',
-                pageTitle: 'Checkout',
-                products: products,
-                totalSum: total
+
+            return stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: products.map(p => {
+                    return {
+                        name: p.productId.title,
+                        description: p.productId.description,
+                        amount: Math.round(p.productId.price * 100),
+                        currency: 'usd',
+                        quantity: p.quantity
+                    };
+                }),
+                mode: 'payment',
+                success_url: req.protocol + '://' + req.get('host') + '/checkout/success',
+                cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
             });
-        }).catch(err => {
+        }).then((session) => {
+        console.log('SESSION ID', session.id)
+
+        res.render('shop/checkout', {
+            path: '/checkout',
+            pageTitle: 'Checkout',
+            products: products,
+            totalSum: total,
+            sessionId: session.id,
+        });
+    }).catch(err => {
         return render500Error(err, req, res, next)
     });
 
 }
 
-exports.postOrder = (req, res, next) => {
+exports.getCheckoutSuccess = (req, res, next) => {
     req.user.populate('cart.items.productId')
         .then(user => {
             const products = user.cart.items.map(item => {
