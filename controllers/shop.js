@@ -4,7 +4,7 @@ const {render500Error} = require("./error-handler");
 const fs = require('fs');
 const path = require('path');
 const pdfDocument = require('pdfkit');
-const stripe = require('stripe')('sk_test_51L7x1MHea8cNXiV8YqG9NNmFTrdLc3zXoAJrBlXstk2bMgpchtXDOs5iy2vrKeEW7K9PtXFVyJCTd4N1oqkiBAqu00J8Pg5FNw');
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 const ITEMS_PER_PAGE = 3;
 
