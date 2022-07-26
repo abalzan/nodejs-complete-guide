@@ -11,14 +11,13 @@ const multer = require('multer');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
-const MONGODB_URI = process.env.MONGO_URI;
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@nodejscompletecourseclu.xgbdg.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
 
 const app = express();
 const store = new mongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions'
 });
-
 const csrfProtection = csrf();
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -102,7 +101,9 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(MONGODB_URI)
   .then(result => {
-      app.listen(3000);
+      // app.listen(process.env.PORT || 3000);
   }).catch(err => {
     throw new Error(err)
   });
+
+module.exports = app;
