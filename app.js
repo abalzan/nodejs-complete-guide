@@ -9,6 +9,8 @@ const flash = require('connect-flash');
 const multer = require('multer');
 const helmet = require('helmet');
 const compression = require('compression');
+const morgan = require('morgan');
+const fs = require('fs');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -59,6 +61,9 @@ app.use(
     })
 );
 app.use(compression());
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
