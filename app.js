@@ -51,8 +51,9 @@ const authRoutes = require('./routes/auth');
 
 app.use(
     helmet.contentSecurityPolicy({
+        useDefaults: false,
         directives: {
-            'default-src': ["'self'"],
+            "default-src": helmet.contentSecurityPolicy.dangerouslyDisableDefaultSrc,
             'script-src': ["'self'", "'unsafe-inline'", 'js.stripe.com'],
             'style-src': ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
             'frame-src': ["'self'", 'js.stripe.com'],

@@ -2,7 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
-const { validationResult } = require("express-validator/check");
+const { validationResult } = require("express-validator");
 const { render500Error } = require('./error-handler');
 
 const transporter = nodemailer.createTransport({
