@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest",
     "start": "node server.js",
     "start:dev": "nodemon -r dotenv/config server.js",
     "start-server": "node app.js"
