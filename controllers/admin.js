@@ -53,14 +53,14 @@ exports.postAddProduct = (req, res, next) => {
     }
     const imageUrl = image.path;
     const product = new Product( {title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user});
-    product.save().then(() => {
+    Product.save(product).then(() => {
         res.redirect('/admin/products');
     }).catch(err => {
         return render500Error(err, req, res, next);
     });
 };
 
-exports.postEditProduct = (req, res, next) => {
+exports.postEditProduct = async (req, res, next) => {
     const id = req.body.productId;
     const title = req.body.title;
     const image = req.file;
@@ -85,7 +85,8 @@ exports.postEditProduct = (req, res, next) => {
             validationErrors: errors.array()
         })
     }
-    Product.findById(id).then(product => {
+    try{
+        const product = await Product.findById(id);
         if(product.userId.toString() !== req.user._id.toString()) {
             return res.redirect('/');
         }
@@ -96,14 +97,14 @@ exports.postEditProduct = (req, res, next) => {
             fileHelper.deleteFile(product.imageUrl);
             product.imageUrl = image.path;
         }
-        return product.save().then(result => {
-            console.log('UPDATED PRODUCT!');
-            res.redirect('/admin/products');
-        }).catch(err => {
+        await Product.save(product);
+        console.log('UPDATED PRODUCT!');
+        res.redirect('/admin/products');
+
+        } catch(err) {
             return render500Error(err, req, res, next);
-        });
-    });
-};
+        }
+    }
 
 exports.getProducts = (req, res, next) => {
     Product.find({userId: req.user._id}).then(products => {
@@ -117,24 +118,24 @@ exports.getProducts = (req, res, next) => {
     });
 };
 
-exports.deleteProduct = (req, res, next) => {
+exports.deleteProduct = async (req, res, next) => {
     const id = req.params.productId;
-    Product.findById(id).then(product => {
+    try {
+        const product = await Product.findById(id);
         if (!product) {
             return next(new Error('Product not found.'));
         }
         fileHelper.deleteFile(product.imageUrl);
-        return Product.deleteOne({_id: id, userId: req.user._id});
-    }).then(() => {
-       console.log('DESTROYED PRODUCT');
-       res.status(200).json({
+        Product.deleteOne({_id: id, userId: req.user._id});
+        console.log('DESTROYED PRODUCT');
+        res.status(200).json({
           message: 'Successfully deleted product'
-       });
-   }).catch(err => {
+        });
+   } catch(err) {
        res.status(500).json({
               message: 'Deleting product failed.'
        });
-   });
+   };
 };
 
 exports.getEditProduct = (req, res, next) => {
