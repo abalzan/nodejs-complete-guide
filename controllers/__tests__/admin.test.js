@@ -1,12 +1,9 @@
 const adminController = require('../admin');
 const Product = require('../../models/product');
-const validationResult = require('express-validator');
 
 jest.mock('../../models/product');
 
 describe('Admin Controller', () => {
-    beforeEach(() => {
-    });
     it('should get the add product page', () => {
         const req = {};
         const res = {

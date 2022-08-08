@@ -53,7 +53,7 @@ exports.postAddProduct = (req, res, next) => {
     }
     const imageUrl = image.path;
     const product = new Product( {title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user});
-    Product.save(product).then(() => {
+    product.save().then(() => {
         res.redirect('/admin/products');
     }).catch(err => {
         return render500Error(err, req, res, next);
@@ -97,7 +97,7 @@ exports.postEditProduct = async (req, res, next) => {
             fileHelper.deleteFile(product.imageUrl);
             product.imageUrl = image.path;
         }
-        await Product.save(product);
+        await product.save();
         console.log('UPDATED PRODUCT!');
         res.redirect('/admin/products');
 
